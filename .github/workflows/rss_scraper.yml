@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -20,11 +20,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Run RSS scraper
-        env:
-          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      - name: Run scraper
         run: |
           python scraper/hindu_rss.py
+
 
