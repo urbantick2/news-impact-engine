@@ -32,7 +32,7 @@ def update_google_sheet(data):
 
     # 2. Open the sheet (Make sure the Service Account Email is shared on this sheet!)
     # Replace 'Your Sheet Name' with the actual name of your Google Sheet
-    sheet = client.open("Your Sheet Name").sheet1 
+    sheet = client.open("News Impact Engine").sheet1 
 
     # 3. Avoid Duplicates (Optional but recommended)
     # Get all existing links in Column C
