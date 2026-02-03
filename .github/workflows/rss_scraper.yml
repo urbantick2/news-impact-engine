@@ -3,7 +3,13 @@ name: RSS Scraper (Every 30 mins)
 on:
   schedule:
     - cron: "*/30 * * * *"
-  workflow_dispatch:
+  workflow_dispatch: # This allows your manual "Run workflow" button to work
+
+# Added permissions to ensure the automated runner has authority
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   run-scraper:
@@ -24,7 +30,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run scraper
+        # We add 'env' here in case you decide to move your URL to GitHub Secrets later
+        env:
+          WEBAPP_URL: ${{ secrets.WEBAPP_URL }}
         run: |
           python scraper/hindu_rss.py
-
-
