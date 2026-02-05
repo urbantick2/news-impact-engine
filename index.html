@@ -91,7 +91,8 @@
             status
           ] = row.split('","').map(s => s.replace(/(^"|"$)/g, ""));
 
-          if (status !== "Published") return;
+          // ✅ PROPER FIX: robust status handling
+          if (!status || status.trim().toLowerCase() !== "published") return;
 
           const card = document.createElement("div");
           card.className = "card";
@@ -121,12 +122,11 @@
           feed.appendChild(card);
         });
       })
-      .catch(err => console.error(err));
+      .catch(err => console.error("Fetch error:", err));
   </script>
 
 </body>
 </html>
-
 
 
 
