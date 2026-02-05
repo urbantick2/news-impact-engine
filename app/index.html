@@ -1,14 +1,74 @@
-mkdir -p app
-nano app/index.html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>News Impact Engine</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      background: #f5f7fa;
+      padding: 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .source {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .headline {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .impact {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .meta {
+      font-size: 12px;
+      color: #444;
+      display: flex;
+      gap: 12px;
+    }
+    .badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 500;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Manual Impact Snapshot</h1>
-  <p>This is where editorial judgment lives.</p>
+
+  <div class="card">
+    <div class="source">The Hindu · National</div>
+    <div class="headline">
+      Imports can never be fully eliminated: Defence Secretary on Make in India
+    </div>
+
+    <div class="impact">
+      India’s defence self-reliance push is hitting strategic limits, signalling
+      continued dependence on global suppliers for critical technologies.
+    </div>
+
+    <div class="meta">
+      <div class="badge">Severity: Medium</div>
+      <div class="badge">Horizon: Long-term</div>
+      <div class="badge">Status: Published</div>
+    </div>
+  </div>
+
 </body>
 </html>
+
 
