@@ -1,122 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>News Impact Engine</title>
+<script>
+const SHEET_ID = "1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDw";
+const SHEET_NAME = "Sheet1"; // change if your tab name is different
 
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0;
-      background: #f5f7fa;
-      padding: 16px;
-    }
+const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    }
+fetch(url)
+  .then(res => res.text())
+  .then(text => {
+    const json = JSON.parse(text.substr(47).slice(0, -2));
+    const rows = json.table.rows;
+    const feed = document.getElementById("feed");
 
-    .source {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 6px;
-    }
+    rows.forEach(r => {
+      const [
+        source,
+        headline,
+        link,
+        published,
+        impact_severity,
+        manual_impact,
+        why_it_matters,
+        add_severity,
+        horizon,
+        status
+      ] = r.c.map(c => c ? c.v : "");
 
-    .headline {
-      font-size: 18px;
-      font-weight: 600;
-      text-decoration: none;
-      color: #111;
-      display: block;
-      margin-bottom: 10px;
-    }
+      if (!status || !status.toLowerCase().includes("publish")) return;
 
-    .impact, .why {
-      font-size: 14px;
-      margin-bottom: 8px;
-      color: #333;
-    }
+      const card = document.createElement("div");
+      card.className = "card";
 
-    .meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
+      card.innerHTML = `
+        <div class="source">${source}</div>
 
-    .badge {
-      font-size: 12px;
-      background: #eef2ff;
-      color: #3730a3;
-      padding: 4px 8px;
-      border-radius: 999px;
-    }
-  </style>
-</head>
+        <a class="headline" href="${link}" target="_blank">
+          ${headline}
+        </a>
 
-<body>
+        <div class="impact">
+          <strong>Manual impact:</strong> ${manual_impact}
+        </div>
 
-  <div id="feed"></div>
+        <div class="why">
+          <strong>Why it matters:</strong> ${why_it_matters}
+        </div>
 
-  <!-- CSV parser -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+        <div class="meta">
+          <span class="badge">${add_severity}</span>
+          <span class="badge">${horizon}</span>
+          <span class="badge">${published}</span>
+        </div>
+      `;
 
-  <script>
-    console.log("JS loaded");
-
-    const SHEET_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDwM__2lJc58ETtY8ojCQEmZjPfz8nGr9FlD/pub?output=csv";
-
-    Papa.parse(SHEET_URL, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        const feed = document.getElementById("feed");
-
-        results.data.forEach(row => {
-          if (!status || !status.toLowerCase().includes("publish")) return;
-;
-
-          const card = document.createElement("div");
-          card.className = "card";
-
-          card.innerHTML = `
-            <div class="source">${row.source}</div>
-
-            <a class="headline" href="${row.link}" target="_blank" rel="noopener">
-              ${row.headline}
-            </a>
-
-            <div class="impact">
-              <strong>Manual impact:</strong> ${row["manual impact"]}
-            </div>
-
-            <div class="why">
-              <strong>Why it matters:</strong> ${row["why it matters"]}
-            </div>
-
-            <div class="meta">
-              <span class="badge">${row["add severity"]}</span>
-              <span class="badge">${row.horizon}</span>
-              <span class="badge">${row.published}</span>
-            </div>
-          `;
-
-          feed.appendChild(card);
-        });
-      },
-      error: function (err) {
-        console.error("CSV parse error:", err);
-      }
+      feed.appendChild(card);
     });
-  </script>
-
-</body>
-</html>
+  })
+  .catch(err => console.error("Sheet error:", err));
+</script>
 
