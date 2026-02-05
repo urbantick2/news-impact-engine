@@ -92,7 +92,8 @@
           ] = row.split('","').map(s => s.replace(/(^"|"$)/g, ""));
 
           // ✅ PROPER FIX: robust status handling
-          if (!status || status.trim().toLowerCase() !== "published") return;
+         if (!row.status || !row.status.toLowerCase().includes("publish")) return;
+;
 
           const card = document.createElement("div");
           card.className = "card";
