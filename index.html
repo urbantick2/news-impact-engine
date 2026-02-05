@@ -80,7 +80,8 @@
         const feed = document.getElementById("feed");
 
         results.data.forEach(row => {
-          if (!row.status || !row.status.toLowerCase().includes("publish")) return;
+          if (!status || !status.toLowerCase().includes("publish")) return;
+;
 
           const card = document.createElement("div");
           card.className = "card";
