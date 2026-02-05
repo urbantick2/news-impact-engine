@@ -27,48 +27,69 @@
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 10px;
-    }
-    .impact {
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-    .meta {
-      font-size: 12px;
-      color: #444;
-      display: flex;
-      gap: 12px;
-    }
-    .badge {
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: #eef2ff;
-      color: #3730a3;
-      font-weight: 500;
-    }
-  </style>
-</head>
-
 <body>
 
-  <div class="card">
-    <div class="source">The Hindu · National</div>
-    <div class="headline">
-      Imports can never be fully eliminated: Defence Secretary on Make in India
-    </div>
+  <div id="feed"></div>
 
-    <div class="impact">
-      India’s defence self-reliance push is hitting strategic limits, signalling
-      continued dependence on global suppliers for critical technologies.
-    </div>
+  <script>
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDwM__2lJc58ETtY8ojCQEmZjPfz8nGr9FlD/pub?output=csv";
 
-    <div class="meta">
-      <div class="badge">Severity: Medium</div>
-      <div class="badge">Horizon: Long-term</div>
-      <div class="badge">Status: Published</div>
-    </div>
-  </div>
+    fetch(SHEET_URL)
+      .then(res => res.text())
+      .then(text => {
+        const rows = text.split("\n").slice(1);
+        const feed = document.getElementById("feed");
+
+        rows.forEach(row => {
+          if (!row.trim()) return;
+
+          const [
+            source,
+            headline,
+            link,
+            published,
+            impact_severity,
+            manual_impact,
+            why_it_matters,
+            add_severity,
+            horizon,
+            status
+          ] = row.split('","').map(s => s.replace(/(^"|"$)/g, ""));
+
+          // Only show published items
+          if (status !== "Published") return;
+
+          const card = document.createElement("div");
+          card.className = "card";
+
+          card.innerHTML = `
+            <div class="source">${source}</div>
+
+            <a class="headline" href="${link}" target="_blank" rel="noopener">
+              ${headline}
+            </a>
+
+            <div class="impact">
+              <strong>Manual impact:</strong> ${manual_impact}
+            </div>
+
+            <div class="why">
+              <strong>Why it matters:</strong> ${why_it_matters}
+            </div>
+
+            <div class="meta">
+              <span class="badge severity">${add_severity}</span>
+              <span class="badge horizon">${horizon}</span>
+              <span class="badge date">${published}</span>
+            </div>
+          `;
+
+          feed.appendChild(card);
+        });
+      });
+  </script>
 
 </body>
-</html>
+
 
 
