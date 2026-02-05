@@ -30,8 +30,8 @@
     .headline {
       font-size: 18px;
       font-weight: 600;
-      color: #111;
       text-decoration: none;
+      color: #111;
       display: block;
       margin-bottom: 10px;
     }
@@ -61,74 +61,85 @@
 
 <body>
 
-  <div id="feed"></div>
+  <div id="feed">Loading…</div>
 
-  <script>
-    console.log("JS loaded");
+<script>
+  console.log("JS loaded");
 
-    const SHEET_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDwM__2lJc58ETtY8ojCQEmZjPfz8nGr9FlD/pub?output=csv";
+  const SHEET_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDwM__2lJc58ETtY8ojCQEmZjPfz8nGr9FlD/pub?output=csv";
 
-    fetch(SHEET_URL)
-      .then(res => res.text())
-      .then(text => {
-        const rows = text.split("\n").slice(1);
-        const feed = document.getElementById("feed");
+  fetch(SHEET_URL)
+    .then(res => res.text())
+    .then(text => {
+      const feed = document.getElementById("feed");
 
-        rows.forEach(row => {
-          if (!row.trim()) return;
+      // --- SAFE CSV PARSER ---
+      const rows = text
+        .split("\n")
+        .map(r => r.trim())
+        .filter(Boolean)
+        .slice(1); // skip header
 
-          const cols = row.split('","').map(s =>
-            s.replace(/^"|"$/g, "")
-          );
+      rows.forEach(row => {
+        // Proper CSV split (handles commas inside quotes)
+        const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)
+          ?.map(c => c.replace(/^"|"$/g, "").trim());
 
-          const [
-            source,
-            headline,
-            link,
-            published,
-            impact_severity,
-            manual_impact,
-            why_it_matters,
-            add_severity,
-            horizon,
-            status
-          ] = cols;
+        if (!cols || cols.length < 10) return;
 
-          // ✅ Show only published items
-          if (!status || !status.toLowerCase().includes("publish")) return;
+        const [
+          source,
+          headline,
+          link,
+          published,
+          impact_severity,
+          manual_impact,
+          why_it_matters,
+          add_severity,
+          horizon,
+          status
+        ] = cols;
 
-          const card = document.createElement("div");
-          card.className = "card";
+        console.log("ROW STATUS:", status);
 
-          card.innerHTML = `
-            <div class="source">${source || ""}</div>
+        // ✅ FINAL publish check (bulletproof)
+        if (!status || !status.toLowerCase().includes("publish")) return;
 
-            <a class="headline" href="${link}" target="_blank" rel="noopener">
-              ${headline || ""}
-            </a>
+        const card = document.createElement("div");
+        card.className = "card";
 
-            <div class="impact">
-              <strong>Manual impact:</strong> ${manual_impact || ""}
-            </div>
+        card.innerHTML = `
+          <div class="source">${source}</div>
 
-            <div class="why">
-              <strong>Why it matters:</strong> ${why_it_matters || ""}
-            </div>
+          <a class="headline" href="${link}" target="_blank" rel="noopener">
+            ${headline}
+          </a>
 
-            <div class="meta">
-              <span class="badge">${add_severity || ""}</span>
-              <span class="badge">${horizon || ""}</span>
-              <span class="badge">${published || ""}</span>
-            </div>
-          `;
+          <div class="impact">
+            <strong>Manual impact:</strong> ${manual_impact}
+          </div>
 
-          feed.appendChild(card);
-        });
-      })
-      .catch(err => console.error("Sheet error:", err));
-  </script>
+          <div class="why">
+            <strong>Why it matters:</strong> ${why_it_matters}
+          </div>
+
+          <div class="meta">
+            <span class="badge">${add_severity}</span>
+            <span class="badge">${horizon}</span>
+            <span class="badge">${published}</span>
+          </div>
+        `;
+
+        feed.appendChild(card);
+      });
+
+      if (!feed.children.length) {
+        feed.innerHTML = "<p>No published items yet.</p>";
+      }
+    })
+    .catch(err => console.error("Sheet error:", err));
+</script>
 
 </body>
 </html>
-
