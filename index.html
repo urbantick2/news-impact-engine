@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>News Impact Engine</title>
+
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -27,18 +28,45 @@
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 10px;
+      display: block;
+      color: #111;
+      text-decoration: none;
+    }
+    .impact, .why {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    .meta {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 12px;
+      background: #eef2ff;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+
 <body>
 
-  <div id="feed"></div>
+  <div id="feed">Loading…</div>
 
   <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDwM__2lJc58ETtY8ojCQEmZjPfz8nGr9FlD/pub?output=csv";
+    console.log("JS loaded");
+
+    const SHEET_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDwM__2lJc58ETtY8ojCQEmZjPfz8nGr9FlD/pub?output=csv";
 
     fetch(SHEET_URL)
       .then(res => res.text())
       .then(text => {
         const rows = text.split("\n").slice(1);
         const feed = document.getElementById("feed");
+        feed.innerHTML = "";
 
         rows.forEach(row => {
           if (!row.trim()) return;
@@ -56,7 +84,6 @@
             status
           ] = row.split('","').map(s => s.replace(/(^"|"$)/g, ""));
 
-          // Only show published items
           if (status !== "Published") return;
 
           const card = document.createElement("div");
@@ -78,9 +105,9 @@
             </div>
 
             <div class="meta">
-              <span class="badge severity">${add_severity}</span>
-              <span class="badge horizon">${horizon}</span>
-              <span class="badge date">${published}</span>
+              <span class="badge">${add_severity}</span>
+              <span class="badge">${horizon}</span>
+              <span class="badge">${published}</span>
             </div>
           `;
 
@@ -90,6 +117,14 @@
   </script>
 
 </body>
+</html>
+
+
+
+
+
+
+
 
 
 
