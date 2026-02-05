@@ -12,6 +12,7 @@
       background: #f5f7fa;
       padding: 16px;
     }
+
     .card {
       background: #fff;
       border-radius: 12px;
@@ -19,32 +20,39 @@
       margin-bottom: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
+
     .source {
       font-size: 12px;
       color: #666;
       margin-bottom: 6px;
     }
+
     .headline {
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 10px;
-      display: block;
-      color: #111;
       text-decoration: none;
+      color: #111;
+      display: block;
+      margin-bottom: 10px;
     }
+
     .impact, .why {
-      margin-top: 8px;
       font-size: 14px;
+      margin-bottom: 8px;
+      color: #333;
     }
+
     .meta {
-      margin-top: 10px;
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      margin-top: 10px;
     }
+
     .badge {
       font-size: 12px;
       background: #eef2ff;
+      color: #3730a3;
       padding: 4px 8px;
       border-radius: 999px;
     }
@@ -53,7 +61,7 @@
 
 <body>
 
-  <div id="feed">Loading…</div>
+  <div id="feed"></div>
 
   <script>
     console.log("JS loaded");
@@ -66,7 +74,6 @@
       .then(text => {
         const rows = text.split("\n").slice(1);
         const feed = document.getElementById("feed");
-        feed.innerHTML = "";
 
         rows.forEach(row => {
           if (!row.trim()) return;
@@ -113,7 +120,8 @@
 
           feed.appendChild(card);
         });
-      });
+      })
+      .catch(err => console.error(err));
   </script>
 
 </body>
