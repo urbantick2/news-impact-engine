@@ -63,77 +63,59 @@
 
   <div id="feed"></div>
 
+  <!-- CSV parser -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
   <script>
     console.log("JS loaded");
 
     const SHEET_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkhpM4wvp0q67eqKpGtdoPgmltqWWgrAvcELyh4an5jDwM__2lJc58ETtY8ojCQEmZjPfz8nGr9FlD/pub?output=csv";
 
-    fetch(SHEET_URL)
-      .then(res => res.text())
-      .then(text => {
-        const rows = text.split("\n").slice(1);
+    Papa.parse(SHEET_URL, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
         const feed = document.getElementById("feed");
 
-        rows.forEach(row => {
-          if (!row.trim()) return;
-
-          const [
-            source,
-            headline,
-            link,
-            published,
-            impact_severity,
-            manual_impact,
-            why_it_matters,
-            add_severity,
-            horizon,
-            status
-          ] = row.split('","').map(s => s.replace(/(^"|"$)/g, ""));
-
-          // ✅ PROPER FIX: robust status handling
-         if (!row.status || !row.status.toLowerCase().includes("publish")) return;
-;
+        results.data.forEach(row => {
+          if (!row.status || !row.status.toLowerCase().includes("publish")) return;
 
           const card = document.createElement("div");
           card.className = "card";
 
           card.innerHTML = `
-            <div class="source">${source}</div>
+            <div class="source">${row.source}</div>
 
-            <a class="headline" href="${link}" target="_blank" rel="noopener">
-              ${headline}
+            <a class="headline" href="${row.link}" target="_blank" rel="noopener">
+              ${row.headline}
             </a>
 
             <div class="impact">
-              <strong>Manual impact:</strong> ${manual_impact}
+              <strong>Manual impact:</strong> ${row["manual impact"]}
             </div>
 
             <div class="why">
-              <strong>Why it matters:</strong> ${why_it_matters}
+              <strong>Why it matters:</strong> ${row["why it matters"]}
             </div>
 
             <div class="meta">
-              <span class="badge">${add_severity}</span>
-              <span class="badge">${horizon}</span>
-              <span class="badge">${published}</span>
+              <span class="badge">${row["add severity"]}</span>
+              <span class="badge">${row.horizon}</span>
+              <span class="badge">${row.published}</span>
             </div>
           `;
 
           feed.appendChild(card);
         });
-      })
-      .catch(err => console.error("Fetch error:", err));
+      },
+      error: function (err) {
+        console.error("CSV parse error:", err);
+      }
+    });
   </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
 
